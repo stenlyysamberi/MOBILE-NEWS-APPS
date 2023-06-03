@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.myapplication.Adapter.AdapterHeadlines;
+import com.example.myapplication.Adapter.AdapterNews;
 import com.example.myapplication.Config.ApiClient;
 import com.example.myapplication.Config.Interfaces;
 import com.example.myapplication.model.Headlines;
@@ -27,13 +28,14 @@ public class MainActivity extends AppCompatActivity {
    String apiKey;
    RecyclerView headlines,news;
    private AdapterHeadlines adapterHeadlines;
+   private AdapterNews adapterNews;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         apiKey = "f7057319d406441e8317dae87edfd1be";
         headlines();
-        //everything();
+        everything();
     }
     void headlines(){
         try {
@@ -77,9 +79,13 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<News> call, Response<News> response) {
                     List<NewsResponse> x = response.body().getNewsResponses();
+                    Context context = MainActivity.this;
                     if (response.isSuccessful() && response.body()!=null){
-                        Log.e("Articel",String.valueOf(x));
-                        Toast.makeText(MainActivity.this, "" + x.get(0).getAuthor(), Toast.LENGTH_SHORT).show();
+                        news = findViewById(R.id.recynews);
+                        news.setEnabled(false);
+                        adapterNews = new AdapterNews(x, context);
+                        news.setAdapter(adapterNews);
+                        news.setLayoutManager(new LinearLayoutManager(context,RecyclerView.VERTICAL, false));
                     }else{
                         Log.e("error", response.errorBody().toString());
                     }
